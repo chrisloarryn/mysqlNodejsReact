@@ -2,10 +2,12 @@ const pool = require("../../config/database");
 
 module.exports = {
   create: (data, callBack) => {
+    console.log(data)
     pool.query(
-      `insert into registration(firstName, lastName, gender, email, password, number) 
-                values(?,?,?,?,?,?)`,
+      `insert into registration(id,firstName, lastName, gender, email, password, number) 
+                values(?,?,?,?,?,?,?)`,
       [
+        data.id,
         data.first_name,
         data.last_name,
         data.gender,

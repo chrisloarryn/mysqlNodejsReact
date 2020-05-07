@@ -1,6 +1,8 @@
 "use strict";
 
-require("dotenv").config('./config.env');
+require("dotenv").config({
+  path: './config.env'
+});
 
 var express = require("express");
 

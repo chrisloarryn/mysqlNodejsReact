@@ -8,8 +8,10 @@ const {
   updateUsers,
   deleteUser
 } = require("./user.controller");
-router.get("/", checkToken, getUsers);
-router.post("/", checkToken, createUser);
+
+router.get("/", checkToken, getUsers); // checkToken
+
+router.post("/", createUser); // checkToken
 router.get("/:id", checkToken, getUserByUserId);
 router.post("/login", login);
 router.patch("/", checkToken, updateUsers);
