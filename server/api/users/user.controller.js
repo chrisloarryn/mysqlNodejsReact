@@ -46,6 +46,9 @@ module.exports = {
         const jsontoken = sign({ result: results }, "qwe1234", {
           expiresIn: "1h"
         });
+        console.log(result)
+
+        jsontoken.secure = true
         res.cookie('token', result.token, jsontoken)
         return res.json({
           success: 1,

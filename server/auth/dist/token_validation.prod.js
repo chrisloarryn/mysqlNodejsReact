@@ -1,0 +1,1 @@
+"use strict";var jwt=require("jsonwebtoken");module.exports={checkToken:function(n,o,c){var e=n.get("authorization");if(!e)return o.json({success:0,message:"Access Denied! Unauthorized User"});console.log(e),e=e.slice(7),jwt.verify(e,process.env.JWT_KEY,function(e,s){if(e)return o.json({success:0,message:"Invalid Token..."});n.decoded=s,c()})}};
