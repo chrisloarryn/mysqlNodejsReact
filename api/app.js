@@ -9,6 +9,7 @@ const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController')
 
 const userRouter = require('./routes/userRoutes')
+const ticketRouter = require('./routes/ticketRoutes')
 
 
 const app = express()
@@ -47,7 +48,7 @@ app.use((req, res, next) => {
 })
 
 // 2) ROUTES
-// app.use('/api/v1/tickets', ticketRouter)
+app.use('/api/v1/tickets', ticketRouter)
 app.use('/api/v1/users', userRouter)
 //app.use('/api/v1/reviews', reviewRouter)
 

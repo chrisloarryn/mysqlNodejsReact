@@ -9,14 +9,23 @@ const express = require('express')
 // } = require('./../controllers/userController')
 const userController = require('./../controllers/userController')
 const authController = require('./../controllers/authController')
+const ticketRoutes = require('./../routes/ticketRoutes')
 
 const router = express.Router()
+// const router = express.Router({ mergeParams: true });
+
+//const router = express.Router({ mergeParams: true });
+
+
+// FOR MY TICKETS OPTION
+router.use('/:userId/tickets', ticketRoutes);
 
 router.post('/signup', authController.signup)
 router.post('/login', authController.login)
 
 // Protect all routes after this middleware
 router.use(authController.protect)
+ 
 
 
 // Routes protected and restricted to admin
@@ -24,7 +33,7 @@ router.use(authController.protect)
 
 router
     .route('/')
-    .get( userController.getAllUsers)
+    .get(authController.restrictTo('user'), userController.getAllUsers)
 
 // router
 //     .route('/:id')

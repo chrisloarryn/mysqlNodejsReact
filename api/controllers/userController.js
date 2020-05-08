@@ -12,5 +12,12 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj
 }
 
+exports.setTicketUserIds = (req, res, next) => {
+  // Allow nested routes
+  if (!req.body.ticket) req.body.ticket = req.params.ticketId;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
+
 //exports.getUser = factory.getOne(User)
-exports.getAllUsers = factory.getAll()
+exports.getAllUsers = factory.getAll('usuarios')
