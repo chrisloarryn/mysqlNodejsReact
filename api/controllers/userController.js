@@ -1,5 +1,5 @@
 //const User = require('./../models/userModel')
-const { UserModel } = require('./../models/index')
+//const { User } = require('./../models/index')
 const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
 const factory = require('./handlerFactory')
@@ -13,4 +13,4 @@ const filterObj = (obj, ...allowedFields) => {
 }
 
 //exports.getUser = factory.getOne(User)
-exports.getAllUsers = factory.getAll(UserModel)
+exports.getAllUsers = factory.getAll()

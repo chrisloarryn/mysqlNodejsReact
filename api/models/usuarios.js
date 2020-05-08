@@ -32,6 +32,6 @@ module.exports = function(sequelize, DataTypes) {
 		tableName: 'usuarios'
 	});
 
+	return UserModel
 
 };
-return UserModel

@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize")
-const UserModel = require('./usuario')
+const { UserModel } = require('./usuarios')
 const TicketModel = require('./ticket')
 const TiposModel = require('./tipoUsuario')
 // const Plant = require('./plant')
@@ -15,9 +15,9 @@ loadConfig()
 const sequelize = new Sequelize('mysql://root:password@localhost:3306/reactapp')
 
 module.exports = {
-    User: UserModel(sequelize, Sequelize.DataTypes),
-    Tipos: TiposModel(sequelize, Sequelize.DataTypes),
-    Ticket: TicketModel(sequelize, Sequelize.DataTypes),
+    User: UserModel,
+    Tipos: TiposModel,
+    Ticket: TicketModel,
     // Plant: Plant(sequelize, Sequelize.DataTypes),
     // Hub: Hub(sequelize, Sequelize.DataTypes),
     // Camera: Camera(sequelize, Sequelize.DataTypes),

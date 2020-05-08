@@ -3,11 +3,13 @@ const AppError = require('./../utils/appError')
 const APIFeatures = require('./../utils/apiFeatures')
 const jwt = require('jsonwebtoken')
 const { loadConfig } = require('../config/config')
+loadConfig()
+const pool = require('./../db/poolDb')
 
 // models
 const model = require('../models/index')
 
-loadConfig()
+
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
     // delete operation
@@ -74,14 +76,13 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    console.log(req.params)
+    console.log(req)
     // To allow for  nested GET reviews o tour (hack)
     let filter = {}
     if (req.params.tourId) filter = { tour: req.params.tourId }
-    model.User.findAll()
-      .then((users => console.log(users)))
-      .catch((err) => {console.log(err)})
-    //console.log(doc)
+    const doc = await pool.query('SELECT * FROM usuarios');
+    //  WHERE user_id = ?', [req.user.id]
+    console.log(doc)
     // EXECUTE QUERY
     // const features = new APIFeatures(Model.find(filter), req.query)
     //   .filter()
