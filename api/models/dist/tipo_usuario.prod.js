@@ -1,0 +1,1 @@
+"use strict";module.exports=function(e,i){return e.define("tipoUsuario",{id:{type:i.INTEGER,allowNull:!1,primaryKey:!0,field:"id"},nombre:{type:i.STRING(50),allowNull:!1,field:"nombre"}},{tableName:"tipo_usuario"})};

@@ -1,0 +1,1 @@
+"use strict";module.exports=function(l,e){return l.define("usuarios",{id:{type:e.INTEGER,allowNull:!1,primaryKey:!0,field:"id"},idTipouser:{type:e.INTEGER,allowNull:!1,field:"id_tipouser"},nombre:{type:e.STRING(50),allowNull:!1,field:"nombre"},mail:{type:e.STRING(50),allowNull:!1,field:"mail"},pass:{type:e.STRING(255),allowNull:!1,field:"pass"}},{tableName:"usuarios"})};

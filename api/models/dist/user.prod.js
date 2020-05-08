@@ -1,0 +1,1 @@
+"use strict";module.exports=function(l,e){var t=l.define("User",{nombre:{type:e.STRING,allowNull:!1},pass:{type:e.STRING,allowNull:!1},email:{type:e.STRING,allowNull:!1},id_tipouser:{type:e.STRING,allowNull:!1}},{});return t.associate=function(l){},t};
