@@ -16,14 +16,15 @@ router.post('/signup', authController.signup)
 router.post('/login', authController.login)
 
 // Protect all routes after this middleware
-// router.use(authController.protect)
+router.use(authController.protect)
+
 
 // Routes protected and restricted to admin
 // router.use(authController.restrictTo('admin'))
 
 router
     .route('/')
-    .get(userController.getAllUsers)
+    .get( userController.getAllUsers)
 
 // router
 //     .route('/:id')

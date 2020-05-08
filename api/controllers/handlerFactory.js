@@ -22,6 +22,7 @@ exports.deleteOne = Model =>
       requestedAt: req.requestTime,
       data: null
     })
+    
   })
 
 exports.updateOne = Model =>
@@ -76,7 +77,6 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    console.log(req)
     // To allow for  nested GET reviews o tour (hack)
     let filter = {}
     if (req.params.tourId) filter = { tour: req.params.tourId }
@@ -96,9 +96,9 @@ exports.getAll = (Model) =>
     res.status(200).json({
       status: 'success',
       requestedAt: req.requestTime,
-      results: 'doc.length',
+      results: doc.length,
       data: {
-        data: 'doc'
+        data: doc
       }
     })
   })

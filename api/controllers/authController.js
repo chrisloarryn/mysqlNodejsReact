@@ -5,9 +5,13 @@ const jwt = require('jsonwebtoken')
 const catchAsync = require('./../utils/catchAsync')
 const AppError = require('./../utils/appError')
 //const sendEmail = require('./../utils/email')
+const { loadConfig } = require('../config/config')
+loadConfig()
+const helpers = require('./../lib/helpers')
 
 const pool = require('./../db/database');
 
+let user = {}
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,16 +19,17 @@ const signToken = id => {
   })
 }
 
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id)
+const createSendToken = (user, statusCode, req, res) => {
+  const token = signToken(user.id)
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true
+    httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
   }
 
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true
+  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') cookieOptions.secure = true
   res.cookie('jwt', token, cookieOptions)
 
   // Remove password from output
@@ -45,44 +50,62 @@ exports.signup = catchAsync(async (req, res, next) => {
   if (!id_tipouser || !nombre || !email || !pass) {
     return next(new AppError('Please provide needed data!', 400))
   }
-  const newUser = {
-    id_tipouser: id_tipouser,
-    nombre: nombre,
-    email: email,
-    pass: pass
+  let newUser = {
+    id_tipouser, nombre, email, pass
   }
+  newUser.pass = await helpers.encryptPassword(pass)
 
-  pool.query(
-    `insert into usuarios(id_tipouser, nombre, email, pass) 
-                values(${id_tipouser},${nombre},${email},${pass})`,
-    (err, rows) => {
-      if (err) {
-        throw err
-      }
-      console.log(null, rows);
-    }
-  );
+  const rows = await pool.query(`SELECT * FROM usuarios where email = ?`, [email], (err, rows) => {
+    if (err) return next(new AppError('Please check your email!', 400))
+    if (rows) return next(new AppError('Please provide another email, user exists!', 400))
+  })
 
-  //createSendToken(newUser, 201, res)
+  const result = await pool
+    .query("INSERT INTO usuarios (id_tipouser, nombre, email, pass) values (?,?,?,?)",
+      [newUser.id_tipouser, newUser.nombre, newUser.email, newUser.pass], (err, rows) => {
+        if (err) return next(new AppError('Error while saving user!', 400))
+        newUser.id = rows.insertId
+        if (rows) createSendToken(newUser, 201, req, res)
+      })
 })
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  })
+  res.status(200).json({ status: 'success' })
+}
+
 exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body
+  const { email, pass } = req.body
 
   // 1) Check if email and password exists
-  if (!email || !password) {
+  if (!email || !pass) {
     return next(new AppError('Please provide email and password!', 400))
   }
 
   // 2) Check if user exists password is correct
-  const user = await User.findOne({ email }).select('+password')
+  const row = await pool.query(`SELECT * FROM usuarios where email = ?`, [email], (err, rows) => {
+    userHandler(err, rows)
+  })
+  
+  const userHandler = async (err, rows) => {
+    if (err) return next(new AppError('Please enter a valid email!', 400))
+    if (rows) {
+      req.body.user = rows[0]
+      if (!rows.length && !rows[0]) return next(new AppError('No document found with that ID', 400))
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect email or password (or user is inactive)', 401))
+      if (!rows[0].email || !(await helpers.matchPassword(pass, rows[0].pass))) {
+        return next(new AppError('Incorrect email or password (or user is inactive)', 401))
+      }
+
+      // 3) If everything is ok, send the token to client
+      createSendToken(rows[0], 200, req, res)
+
+    }
   }
-
-  // 3) If everything is ok, send the token to client
-  createSendToken(user, 200, res)
+ 
 })
 
 exports.protect = catchAsync(async (req, res, next) => {
