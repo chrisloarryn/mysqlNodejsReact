@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react'
-import Axios from 'axios'
 import Card from '../../shared/components/UIElements/Card'
 import Input from '../../shared/components/FormElements/Input'
 import Button from '../../shared/components/FormElements/Button'
@@ -67,58 +66,44 @@ const Auth = () => {
         const responseData = await sendRequest(
           'http://localhost:5000/api/v1/users/login',
           'POST',
-          JSON.stringify(
-            {
-              email: formState.inputs.email.value,
-              password: formState.inputs.password.value
-            }
-          ),
+          JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value
+          }),
           {
             'Content-Type': 'application/json',
-            'credentials': 'include'
+            credentials: 'include'
           }
         )
         console.log(responseData)
+        // window.localStorage.setItem('access_token', responseData.token)
         setTimeout(() => {
           auth.login()
         }, 1200)
-      }catch (err) {
-
-      }
-
-
+      } catch (err) {}
     } else {
       try {
-        const response = await fetch(
+        const responseData = await sendRequest(
           'http://localhost:5000/api/v1/users/signup',
+          'POST',
+          JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value
+          }),
           {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              name: formState.inputs.name.value,
-              email: formState.inputs.email.value,
-              password: formState.inputs.password.value
-            })
+            'Content-Type': 'application/json'
           }
         )
-
-        const responseData = await response.json()
-
-        if (!response.ok) {
-          throw new Error(responseData.message)
-        }
-        console.log(responseData)
+        // console.log(responseData)
         setTimeout(() => {
-          auth.login()
-        }, 1200)
-      } catch (err) {
-      }
+          // auth.login()
+          if (responseData) setIsLoginMode(true)
+        }, 1000)
+      } catch (err) {}
     }
     //
   }
-
 
   return (
     <React.Fragment>
