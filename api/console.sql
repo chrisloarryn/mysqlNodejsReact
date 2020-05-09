@@ -68,40 +68,37 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 
 
 
-------------
-
-create schema if not exists reactapp collate utf8mb4_0900_ai_ci;
-
-create table if not exists tipo_usuario
+-create table tipo_usuario
 (
-	id int auto_increment
-		primary key,
-	nombre varchar(50) not null
+    id     int auto_increment
+        primary key,
+    nombre varchar(50) not null
 );
 
-create table if not exists usuarios
+create table usuarios
 (
-	id int auto_increment
-		primary key,
-	id_tipouser int not null,
-	nombre varchar(50) not null,
-	email varchar(50) not null,
-	pass varchar(255) not null,
-	constraint usuarios_email_uindex
-		unique (email),
-	constraint fk_tipo
-		foreign key (id_tipouser) references tipo_usuario (id)
+    id          int auto_increment
+        primary key,
+    id_tipouser int          not null,
+    nombre      varchar(50)  not null,
+    email       varchar(50)  not null,
+    password    varchar(255) not null,
+    constraint usuarios_email_uindex
+        unique (email),
+    constraint fk_tipo
+        foreign key (id_tipouser) references tipo_usuario (id)
 );
 
-create table if not exists ticket
+create table ticket
 (
-	id int auto_increment
-		primary key,
-	id_user int not null,
-	ticket_pedido int not null,
-	constraint fk_user
-		foreign key (id_user) references usuarios (id)
+    id            int auto_increment
+        primary key,
+    id_user       int          null,
+    ticket_pedido varchar(255) not null,
+    constraint fk_user
+        foreign key (id_user) references usuarios (id)
 );
+
 
 -- -------------------------
 

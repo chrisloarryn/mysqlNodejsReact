@@ -45,16 +45,15 @@ const createSendToken = (user, statusCode, req, res) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { id_tipouser, nombre, email, pass } = req.body
-  console.log(req.body)
+  const { id_tipouser, nombre, email, password } = req.body
   // to validate ok data
-  if (!id_tipouser || !nombre || !email || !pass) {
+  if (!id_tipouser || !nombre || !email || !password) {
     return next(new AppError('Please provide needed data!', 400))
   }
   let newUser = {
-    id_tipouser, nombre, email, pass
+    id_tipouser, nombre, email, password
   }
-  newUser.pass = await helpers.encryptPassword(pass)
+  newUser.password = await helpers.encryptPassword(password)
 
   const rows = await pool.query(`SELECT * FROM usuarios where email = ?`, [email], (err, rows) => {
     if (err) return next(new AppError('Please check your email!', 400))
@@ -62,8 +61,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   })
 
   const result = await pool
-    .query("INSERT INTO usuarios (id_tipouser, nombre, email, pass) values (?,?,?,?)",
-      [newUser.id_tipouser, newUser.nombre, newUser.email, newUser.pass], (err, rows) => {
+    .query("INSERT INTO usuarios (id_tipouser, nombre, email, password) values (?,?,?,?)",
+      [newUser.id_tipouser, newUser.nombre, newUser.email, newUser.password], (err, rows) => {
         if (err) return next(new AppError('Error while saving user!', 400))
         newUser.id = rows.insertId
         if (rows) createSendToken(newUser, 201, req, res)
@@ -79,10 +78,10 @@ exports.logout = (req, res) => {
 }
 
 exports.login = catchAsync(async (req, res, next) => {
-  const { email, pass } = req.body
+  const { email, password } = req.body
 
   // 1) Check if email and password exists
-  if (!email || !pass) {
+  if (!email || !password) {
     return next(new AppError('Please provide email and password!', 400))
   }
 
@@ -95,18 +94,17 @@ exports.login = catchAsync(async (req, res, next) => {
   const userHandler = async (err, rows) => {
     if (err) return next(new AppError('Please enter a valid email!', 400))
     if (rows) {
-      req.body.user = { ...rows[0] }
-      // console.log('fdsd', req.body)
       if (!rows.length && !rows[0]) return next(new AppError('No document found with that ID', 400))
 
-      if (!rows[0].email || !(await helpers.matchPassword(pass, rows[0].pass))) {
+      if (!rows[0].email || !(await helpers.matchPassword(password, rows[0].password))) {
         return next(new AppError('Incorrect email or password (or user is inactive)', 401))
       }
-      const body = { ...req.body.user }
-
-      req.user = rows[0]
-      console.log(req.user)
+      
+      
+      // console.log(req.user)
       // 3) If everything is ok, send the token to client
+      req.user = rows[0]
+      req.user.role = rows[0].role
       createSendToken(rows[0], 200, req, res)
 
     }
@@ -135,14 +133,15 @@ exports.protect = catchAsync(async (req, res, next) => {
   const Id = decoded.id
 
   // 3) Check if user still exists => .select('+field') to show it
-  const currentUser = await pool.query(`SELECT * FROM usuarios where id = ?`, [Id], (err, rows) => {
+  const currentUser = await pool.query(`SELECT u.*, t.nombre as role FROM usuarios u join tipo_usuario t on u.id_tipouser = t.id
+  where u.id = ?`, [Id], (err, rows) => {
     userHandler(err, rows)
   })
   // const currentUser = await User.findById(decoded.id) // .select('+password')
   const userHandler = async (err, rows) => {
     if (err) return next(new AppError('Invalid token or authorization!', 400))
     if (rows) {
-      req.user = rows[0]
+      //req.user = rows[0]
       if (!rows.length && !rows[0]) {
         return next(
           new AppError(
@@ -152,7 +151,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         )
       }
       // GRANT ACCESS TO PROTECTED ROUTE
-      // req.user = currentUser
+      req.user = rows[0]
       next()
 
     }
@@ -161,9 +160,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return async (req, res, next) => {
+    console.log('rrrrr', req.user)
     // id_tipouser: 1200001, user
     // id_tipouser: 1200002, admin
-    
+    // console.log(...roles);
     // Roles ['admin', 'lead-guide']. role='user'
     if (!roles.includes(req.user.role)) {
       return next(

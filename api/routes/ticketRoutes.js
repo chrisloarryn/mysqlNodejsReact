@@ -12,7 +12,7 @@ router
   .get(ticketController.getAllTickets)
   .post(
     authController.protect,
-    ticketController.setTicketUserIds,
+    // ticketController.setTicketUserIds,
     authController.restrictTo('admin'),
     ticketController.createTicket
   );

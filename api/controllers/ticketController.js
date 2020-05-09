@@ -5,7 +5,7 @@ const AppError = require('../utils/appError');
 
 exports.setTicketUserIds = (req, res, next) => {
     // Allow nested routes
-    console.log(req.body, req.user)
+    console.log('USER:::', req.user)
     if (!req.body.ticket) req.body.ticket = req.params.ticketId;
     if (!req.body.user) req.body.user = req.user.id;
     next();
