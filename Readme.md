@@ -22,3 +22,6 @@ se debe ejecutar el script `npm start` en ambas carpetas.
 
 #############
 otra manera es en la raiz, ejecutar `npm install`y luego el comando `npm start`
+
+Lo que mas hice fue en el back-end
+`https://www.getpostman.com/collections/4ea82eba4e00699419dc`
