@@ -1,6 +1,6 @@
 `Welcome`
 
-CONEXION A BD EN .env, ya no es local.
+CONEXION A BD EN `.env, ya no es local.
 
 para ejecución:
 
