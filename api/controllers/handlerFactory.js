@@ -57,8 +57,9 @@ exports.updateOne = Model =>
 
 exports.createOne = Model =>
   catchAsync(async (req, res, next) => {
+    const id = req.body.id_user ? req.body.id_user : null
     const doc = await pool.query(
-      `INSERT INTO ${Model} (id_user, ticket_pedido) values (null, '${req.body.ticket_pedido}')`
+      `INSERT INTO ${Model} (id_user, ticket_pedido) values (${id}, '${req.body.ticket_pedido}')`
     )
 
     res.status(201).json({

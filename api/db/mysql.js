@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const { loadConfig } = require('../config/config')
+const { loadConfig} = require('../config/config')
 
 loadConfig()
 const sequelize = new Sequelize('oNcACxFstL', 'oNcACxFstL', 'Hct8mjydD2', {
