@@ -19,7 +19,9 @@ const userRouter = require('./routes/userRoutes')
 const ticketRouter = require('./routes/ticketRoutes')
 
 const app = express()
-
+app.enable('trust proxy')
+app.use(cors())
+app.options('*', cors())
 // 1) GLOBAL MIDDLEWARE
 // Set security HTTP headers
 app.use(helmet())
@@ -42,7 +44,7 @@ app.use('/api', limiter)
 app.use(express.json({ limit: '10kb' }))
 app.use(express.urlencoded({ extended: true, limit: '10kb' }))
 app.use(cookieParser())
-app.options('*', cors())
+
 //app.use(cors())
 /**
  * Headers
