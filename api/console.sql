@@ -68,7 +68,7 @@ ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 
 
 
--create table tipo_usuario
+create table tipo_usuario
 (
     id     int auto_increment
         primary key,
@@ -80,7 +80,7 @@ create table usuarios
     id          int auto_increment
         primary key,
     id_tipouser int          not null,
-    nombre      varchar(50)  not null,
+    name        varchar(50)  not null,
     email       varchar(50)  not null,
     password    varchar(255) not null,
     constraint usuarios_email_uindex
