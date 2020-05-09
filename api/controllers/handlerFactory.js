@@ -92,13 +92,17 @@ exports.getOne = (Model, popOptions) =>
 exports.getAll = Model =>
   catchAsync(async (req, res, next) => {
     // To allow for  nested GET reviews o tour (hack)
-    let cant = []
+    let doc;
     //if (req.params.tourId) filter = { tour: req.params.tourId }
-    const doc = await pool.query(`SELECT u.*, t.nombre as role FROM ${Model} u join tipo_usuario t on u.id_tipouser = t.id`)
-    for (const user of doc) {
-      const res = await pool.query(`SELECT COUNT(*) FROM ticket t where t.id_user = ${user.id}`)
-      const value = Object.values(res[0])[0]
-      user.cant = value ? value : 0
+    if (Model === 'ticket') {
+      doc = await pool.query(`SELECT * FROM ${Model}`)
+    } else if(Model === 'usuarios') {
+      doc = await pool.query(`SELECT u.*, t.nombre as role FROM ${Model} u join tipo_usuario t on u.id_tipouser = t.id`)
+      for (const user of doc) {
+        const res = await pool.query(`SELECT COUNT(*) FROM ticket t where t.id_user = ${user.id}`)
+        const value = Object.values(res[0])[0]
+        user.cant = value ? value : 0
+      }
     }
 
     // SEND RESPONSE
