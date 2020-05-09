@@ -45,24 +45,34 @@ const createSendToken = (user, statusCode, req, res) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { id_tipouser, nombre, email, password } = req.body
+  let { name, email, password } = req.body
+  let id_tipouser;
+  if(!req.body.id_tipouser) req.body.id_tipouser = undefined
+  else id_tipouser = req.body.id_tipouser
   // to validate ok data
-  if (!id_tipouser || !nombre || !email || !password) {
-    return next(new AppError('Please provide needed data!', 400))
+  if (!name || !email || !password) {
+    return next(new AppError('Please provide needed data!', 401))
+  }
+  if (id_tipouser === 'admin' || id_tipouser === 1200002) {
+    id_tipouser = 1200002
+  } else if (id_tipouser === 'user' || id_tipouser === 1200001 || !id_tipouser) {
+    id_tipouser = 1200001
+  } else {
+    id_tipouser = 1200001
   }
   let newUser = {
-    id_tipouser, nombre, email, password
+    id_tipouser, name, email, password
   }
+  
   newUser.password = await helpers.encryptPassword(password)
-
   const rows = await pool.query(`SELECT * FROM usuarios where email = ?`, [email], (err, rows) => {
     if (err) return next(new AppError('Please check your email!', 400))
-    if (rows) return next(new AppError('Please provide another email, user exists!', 400))
+    if (rows[0]) return next(new AppError('Please provide another email, user exists!', 400))
   })
 
   const result = await pool
-    .query("INSERT INTO usuarios (id_tipouser, nombre, email, password) values (?,?,?,?)",
-      [newUser.id_tipouser, newUser.nombre, newUser.email, newUser.password], (err, rows) => {
+    .query("INSERT INTO usuarios (id_tipouser, name, email, password) values (?,?,?,?)",
+      [newUser.id_tipouser, newUser.name, newUser.email, newUser.password], (err, rows) => {
         if (err) return next(new AppError('Error while saving user!', 400))
         newUser.id = rows.insertId
         if (rows) createSendToken(newUser, 201, req, res)
@@ -92,7 +102,7 @@ exports.login = catchAsync(async (req, res, next) => {
   })
 
   const userHandler = async (err, rows) => {
-    if (err) return next(new AppError('Please enter a valid email!', 400))
+    if (err) return next(new AppError('Please enter a valid email!', 401))
     if (rows) {
       if (!rows.length && !rows[0]) return next(new AppError('No document found with that ID', 400))
 

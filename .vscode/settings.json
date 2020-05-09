@@ -31,5 +31,6 @@
     "scss.validate": false,
     "less.validate": false,
     "editor.wordWrap": "on",
-    "peacock.color": "#333333"
+    "peacock.color": "#333333",
+    "standard.enable": false
 }
