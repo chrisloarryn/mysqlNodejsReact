@@ -29,11 +29,11 @@ router.use(authController.protect)
 
 
 // Routes protected and restricted to admin
-// router.use(authController.restrictTo('admin'))
+router.use(authController.restrictTo('admin'))
 
 router
     .route('/')
-    .get(authController.restrictTo('user'), userController.getAllUsers)
+    .get(userController.getAllUsers)
 
 // router
 //     .route('/:id')

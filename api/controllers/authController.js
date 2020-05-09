@@ -46,6 +46,7 @@ const createSendToken = (user, statusCode, req, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { id_tipouser, nombre, email, pass } = req.body
+  console.log(req.body)
   // to validate ok data
   if (!id_tipouser || !nombre || !email || !pass) {
     return next(new AppError('Please provide needed data!', 400))

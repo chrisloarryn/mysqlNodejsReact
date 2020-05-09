@@ -3,7 +3,7 @@
 const path = require('path')
 const dotenv = require('dotenv')
 
-console.log('load node process env', process.env.NODE_ENV)
+// console.log('load node process env', process.env.NODE_ENV)
 
 const loadConfig = () => {
     if (process.env.NODE_ENV === 'prod') {
@@ -15,8 +15,7 @@ const loadConfig = () => {
     } else {
         dotenv.config({ path: path.join(__dirname, './.env') })
         // dotenv.config({ path: './config.env' })
-
-        console.log('charge development configs')
+        // console.log('charge development configs')
     }
 }
 
