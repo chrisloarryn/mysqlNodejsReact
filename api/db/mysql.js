@@ -2,7 +2,7 @@ const Sequelize = require('sequelize')
 const { loadConfig } = require('../config/config')
 
 loadConfig()
-const sequelizer = new Sequelize('reactapp', 'root', '', {
+const sequelize = new Sequelize('oNcACxFstL', 'oNcACxFstL', 'Hct8mjydD2', {
     host: 'localhost',
     dialect: 'mysql',
     pool: {
@@ -11,6 +11,6 @@ const sequelizer = new Sequelize('reactapp', 'root', '', {
         idle: 10000
     }
 })
-const sequelize = new Sequelize('mysql://root:@localhost:3306/reactapp')
+// const sequelize = new Sequelize('mysql://oNcACxFstL:Hct8mjydD2@remotemysql.com:3306/oNcACxFstL')
 
 module.exports = sequelize
