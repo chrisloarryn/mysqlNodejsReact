@@ -1,9 +1,15 @@
+const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const xss = require('xss-clean')
 const hpp = require('hpp')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const compression = require('compression')
+
+
 const cors = require('cors')
 
 const AppError = require('./utils/appError')
@@ -11,7 +17,6 @@ const globalErrorHandler = require('./controllers/errorController')
 
 const userRouter = require('./routes/userRoutes')
 const ticketRouter = require('./routes/ticketRoutes')
-
 
 const app = express()
 
@@ -22,7 +27,6 @@ app.use(helmet())
 // Development
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
-
 }
 
 // Limit requests from same API
@@ -34,8 +38,12 @@ const limiter = rateLimit({
 app.use('/api', limiter)
 
 // Body parser, reading data from body into req.body
+// bodyParser is not needed, express.raw() === bodyParser.raw()
 app.use(express.json({ limit: '10kb' }))
-app.use(cors())
+app.use(express.urlencoded({ extended: true, limit: '10kb' }))
+app.use(cookieParser())
+app.options('*', cors())
+//app.use(cors())
 /**
  * Headers
  */
@@ -61,7 +69,7 @@ app.use((req, res, next) => {
     // console.log(req.headers);
     next()
 })
-
+app.use(compression())
 // app.use(require('./config/headers'))
 
 
