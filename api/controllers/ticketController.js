@@ -12,7 +12,6 @@ exports.setTicketUserIds = (req, res, next) => {
   };
 
 exports.getAllTickets = factory.getAll('ticket');
-// exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.getTicket = factory.getOne('ticket');
 exports.createTicket = factory.createOne('ticket');
 exports.updateTicket = factory.updateOne('ticket');

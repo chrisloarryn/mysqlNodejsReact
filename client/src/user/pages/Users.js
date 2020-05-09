@@ -3,37 +3,29 @@ import React, { useEffect, useState } from 'react'
 import UsersList from '../components/UsersList'
 import ErrorModal from '../../shared/components/UIElements/ErrorModal'
 import LoadingSpinner from './../../shared/components/UIElements/LoadingSpinner'
+import {useHttpClient} from '../../shared/hooks/http-hook'
 
 const Users = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState()
+  const {isLoading, error, sendRequest, cleanError} = useHttpClient()
   const [loadedUsers, setLoadedUsers] = useState()
 
+
   useEffect(() => {
-    const sendRequest = async () => {
-      setIsLoading(true)
+    const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/users')
-        const responseData = await response.json()
-
-        if (!response.ok) {
-          throw new Error(responseData.message)
+        const responseData = await sendRequest('http://localhost:5000/api/v1/users')
+        for (const user of responseData.data.data) {
+          user.image = 'https://748073e22e8db794416a-cc51ef6b37841580002827d4d94d19b6.ssl.cf3.rackcdn.com/not-found.png'
         }
-
+        console.log(responseData)
         setLoadedUsers(responseData.data.data)
-        setIsLoading(false)
       } catch (err) {
-        setError(err.message)
+        cleanError()
       }
-      setIsLoading(false)
-
     }
-    sendRequest()
-  }, [])
+    fetchUsers()
+  }, [sendRequest])
 
-  const errorHandler = () => {
-    setError(null)
-  }
   // const USERS = [
   //   {
   //     id: 'u1',
@@ -46,7 +38,7 @@ const Users = () => {
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={cleanError} />
       {isLoading && <div className="center">
         <LoadingSpinner />
       </div>}

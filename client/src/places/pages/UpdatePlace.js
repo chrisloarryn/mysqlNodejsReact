@@ -126,7 +126,7 @@ const UpdatePlace = () => {
         initialValid={formState.inputs.description.isValid}
       />
       <Button type="submit" disabled={!formState.isValid}>
-        UPDATE PLACE
+        UPDATE TICKET
       </Button>
     </form>
   );

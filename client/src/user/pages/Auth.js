@@ -11,14 +11,14 @@ import {
   VALIDATOR_REQUIRE
 } from '../../shared/util/validators'
 import { useForm } from '../../shared/hooks/form-hook'
+import { useHttpClient } from '../../shared/hooks/http-hook'
 import { AuthContext } from '../../shared/context/auth-context'
 import './Auth.css'
 
 const Auth = () => {
   const auth = useContext(AuthContext)
   const [isLoginMode, setIsLoginMode] = useState(true)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const { isLoading, error, sendRequest, cleanError } = useHttpClient()
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -64,40 +64,31 @@ const Auth = () => {
 
     if (isLoginMode) {
       try {
-        setIsLoading(true)
-        setError(null)
-        const response = await fetch(
+        const responseData = await sendRequest(
           'http://localhost:5000/api/v1/users/login',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+          'POST',
+          JSON.stringify(
+            {
               email: formState.inputs.email.value,
               password: formState.inputs.password.value
-            })
+            }
+          ),
+          {
+            'Content-Type': 'application/json',
+            'credentials': 'include'
           }
         )
-
-        const responseData = await response.json()
-
-        if (!response.ok) {
-          throw new Error(responseData.message)
-        }
         console.log(responseData)
         setTimeout(() => {
-          setIsLoading(false)
           auth.login()
         }, 1200)
-      } catch (err) {
-        setIsLoading(false)
-        setError(err.message || 'Something went wrong, please try again.')
+      }catch (err) {
+
       }
+
+
     } else {
       try {
-        setIsLoading(true)
-        setError(null)
         const response = await fetch(
           'http://localhost:5000/api/v1/users/signup',
           {
@@ -120,24 +111,18 @@ const Auth = () => {
         }
         console.log(responseData)
         setTimeout(() => {
-          setIsLoading(false)
           auth.login()
         }, 1200)
       } catch (err) {
-        setIsLoading(false)
-        setError(err.message || 'Something went wrong, please try again.')
       }
     }
     //
   }
 
-  const errorHandler = err => {
-    setError(null)
-  }
 
   return (
     <React.Fragment>
-      <ErrorMpdal error={error} onClear={errorHandler} />
+      <ErrorMpdal error={error} onClear={cleanError} />
       <Card className='authentication'>
         {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>

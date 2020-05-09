@@ -25,11 +25,11 @@ const createSendToken = (user, statusCode, req, res) => {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
-    httpOnly: true,
-    secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+    httpOnly: true
+    // secure: req.secure || req.headers['x-forwarded-proto'] === 'http'
   }
 
-  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') cookieOptions.secure = true
+  if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development') cookieOptions.secure = false
   res.cookie('jwt', token, cookieOptions)
 
   // Remove password from output
@@ -132,11 +132,11 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1]
   }
 
-  if (!token) {
-    return next(
-      new AppError('Your are not logged in! Please log in to get access.', 401)
-    )
-  }
+  // if (!token) {
+  //   return next(
+  //     new AppError('Your are not logged in! Please log in to get access.', 401)
+  //   )
+  // }
 
   // 2) Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
@@ -170,6 +170,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 // Only for rendered pages, no errors!
 exports.isLoggedIn = async (req, res, next) => {
+  console.log(req.cookies)
   if (req.cookies.jwt) {
     try {
       // 1) verify token
@@ -185,9 +186,9 @@ exports.isLoggedIn = async (req, res, next) => {
       }
 
       // 3) Check if user changed password after the token was issued
-      if (currentUser.changedPasswordAfter(decoded.iat)) {
-        return next()
-      }
+      // if (currentUser.changedPasswordAfter(decoded.iat)) {
+      //   return next()
+      // }
 
       // THERE IS A LOGGED IN USER
       res.locals.user = currentUser
@@ -201,15 +202,16 @@ exports.isLoggedIn = async (req, res, next) => {
 
 exports.restrictTo = (...roles) => {
   return async (req, res, next) => {
-    console.log('rrrrr', req.user)
     // id_tipouser: 1200001, user
     // id_tipouser: 1200002, admin
     // console.log(...roles);
     // Roles ['admin', 'lead-guide']. role='user'
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError('You do not have permission to perform this action', 403)
-      )
+    if (req.user && req.user.role) {
+      if (!roles.includes(req.user.role)) {
+        return next(
+          new AppError('You do not have permission to perform this action', 403)
+        )
+      }
     }
 
     next()

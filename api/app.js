@@ -8,8 +8,7 @@ const hpp = require('hpp')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const compression = require('compression')
-
-
+const bearerToken = require('express-bearer-token');
 const cors = require('cors')
 
 const AppError = require('./utils/appError')
@@ -19,19 +18,20 @@ const userRouter = require('./routes/userRoutes')
 const ticketRouter = require('./routes/ticketRoutes')
 
 const app = express()
-app.enable('trust proxy')
-app.use(cors())
-app.options('*', cors())
-// 1) GLOBAL MIDDLEWARE
-// Set security HTTP headers
-app.use(helmet())
+//  app.enable('trust proxy')
+//  app.options('*', cors())
+app.use(cors());
+  
+//  1) GLOBAL MIDDLEWARE
+//  Set security HTTP headers
+//  app.use(helmet())
 
-// Development
+//  Development
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
 
-// Limit requests from same API
+//  Limit requests from same API
 const limiter = rateLimit({
     max: 100,
     windowMs: 60 * 60 * 1000, // 1 hour to milliseconds
@@ -45,7 +45,7 @@ app.use(express.json({ limit: '10kb' }))
 app.use(express.urlencoded({ extended: true, limit: '10kb' }))
 app.use(cookieParser())
 
-//app.use(cors())
+//  app.use(cors())
 /**
  * Headers
  */
@@ -55,20 +55,25 @@ app.use(cookieParser())
         'Access-Control-Allow-Headers', 
         'Origin, X-Requested-With, Content-Type, Accept, Authorization')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
+    res.setHeader(
+        'Access-Control-Expose-Headers', 
+        'Content-Range,X-Content-Range,X-Requested-With')
+   //   res.setHeader('Access-Control-Allow-Credentials')
 
     next()
 })
 
-// Data sanitization against XXS (cross site scripting attacks)
-app.use(xss())
+//  Data sanitization against XXS (cross site scripting attacks)
+//  app.use(xss())
+//  app.use(bearerToken());
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`))
+//  Serving static files
+//  app.use(express.static(`${__dirname}/public`))
 
 // Test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString()
-    // console.log(req.headers);
+    //  console.log(req.headers);
     next()
 })
 app.use(compression())
