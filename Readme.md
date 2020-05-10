@@ -1,10 +1,16 @@
 `Welcome`
+____________________________________________________________________________
 
-CONEXION A BD EN `.env, ya no es local.
 
+
+CONEXION A BD EN `.env, ya no es local.`
+
+
+por ende no es necesario ejecutar script ni configurar db.
+____________________________________________________________________________
 para ejecución:
 
-## paso 1
+############### paso 1 ####################################################
 cambiar usuario y password de la BD por los suyos::
 esto es en:
 `` cd /api/config/.env ``
@@ -14,7 +20,7 @@ luego, ejecutar comandos para la bd `./console.sql`
 `insert into tipo_usuario values (1200001, 'user')
 insert into tipo_usuario values (1200002, 'admin')`
 
-#############
+##############################################################################
 Para iniciar la api y el cliente, 
 se deben instalar los módulos de node, ingresando a cada una de las carpetas e
 iniciar la instalacion: `npm i` or `sudo npm i` (de preferencia sin sudo)
