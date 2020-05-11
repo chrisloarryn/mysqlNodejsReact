@@ -95,7 +95,7 @@ exports.getAll = Model =>
     let doc;
     //if (req.params.tourId) filter = { tour: req.params.tourId }
     if (Model === 'ticket') {
-      doc = await pool.query(`SELECT * FROM ${Model}`)
+      doc = await pool.query(`SELECT t.*, u.name as author FROM ${Model} t join usuarios u ON t.id_user = u.id`)
     } else if(Model === 'usuarios') {
       doc = await pool.query(`SELECT u.*, t.nombre as role FROM ${Model} u join tipo_usuario t on u.id_tipouser = t.id`)
       for (const user of doc) {

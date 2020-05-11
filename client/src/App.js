@@ -15,31 +15,35 @@ import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth-context';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(false);
+  const [userId, setUserId] = useState(false);
 
-  const login = useCallback(() => {
-    setIsLoggedIn(true);
+  const login = useCallback((uid, token) => {
+    setToken(token)
+    setUserId(uid)
   }, []);
 
   const logout = useCallback(() => {
-    setIsLoggedIn(false);
+    setToken(null)
+    setUserId(null)
+
   }, []);
 
   let routes;
 
-  if (isLoggedIn) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
           <Users />
         </Route>
-        <Route path="/:userId/places" exact>
+        <Route path="/:userId/tickets" exact>
           <UserPlaces />
         </Route>
-        <Route path="/places/new" exact>
+        <Route path="/tickets/new" exact>
           <NewPlace />
         </Route>
-        <Route path="/places/:placeId">
+        <Route path="/tickets/:placeId">
           <UpdatePlace />
         </Route>
         <Redirect to="/" />
@@ -51,7 +55,7 @@ const App = () => {
         <Route path="/" exact>
           <Users />
         </Route>
-        <Route path="/:userId/places" exact>
+        <Route path="/:userId/tickets" exact>
           <UserPlaces />
         </Route>
         <Route path="/auth">
@@ -64,7 +68,7 @@ const App = () => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, login: login, logout: logout }}
+      value={{ isLoggedIn: token, login: login, logout: logout }}
     >
       <Router>
         <MainNavigation />

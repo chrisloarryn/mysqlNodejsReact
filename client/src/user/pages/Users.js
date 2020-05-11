@@ -9,7 +9,6 @@ const Users = () => {
   const {isLoading, error, sendRequest, cleanError} = useHttpClient()
   const [loadedUsers, setLoadedUsers] = useState()
 
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -25,16 +24,6 @@ const Users = () => {
     }
     fetchUsers()
   }, [sendRequest])
-
-  // const USERS = [
-  //   {
-  //     id: 'u1',
-  //     name: 'Max Schwarz',
-  //     image:
-  //       'https://images.pexels.com/photos/839011/pexels-photo-839011.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-  //     places: 3
-  //   }
-  // ];
 
   return (
     <React.Fragment>
