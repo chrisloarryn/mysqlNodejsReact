@@ -51,15 +51,14 @@ app.use(cookieParser())
  */
  app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('X-Powered-By', 'Express')
     res.setHeader(
         'Access-Control-Allow-Headers', 
         'Origin, X-Requested-With, Content-Type, Accept, Authorization')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
-    res.setHeader(
-        'Access-Control-Expose-Headers', 
-        'Content-Range,X-Content-Range,X-Requested-With')
-   //   res.setHeader('Access-Control-Allow-Credentials')
-
+    res.setHeader('Content-Type', 'application/json; charset=utf-8')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('Transfer-Encoding', 'chunked')
     next()
 })
 
@@ -73,7 +72,8 @@ app.use(cookieParser())
 // Test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString()
-    //  console.log(req.headers);
+    // console.log(req.headers);
+    // console.log(res.locals[0]);
     next()
 })
 app.use(compression())
